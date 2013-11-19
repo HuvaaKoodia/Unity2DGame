@@ -20,7 +20,7 @@ TextureImporter:
   grayScaleToAlpha: 0
   generateCubemap: 0
   seamlessCubemap: 0
-  textureFormat: -1
+  textureFormat: -2
   maxTextureSize: 1024
   textureSettings:
     filterMode: 0
@@ -48,6 +48,33 @@ TextureImporter:
         y: 43
         width: 44
         height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: Weapons_1
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 34
+        width: 17
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: Weapons_2
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 25
+        width: 24
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+    - name: Weapons_3
+      rect:
+        serializedVersion: 2
+        x: 3
+        y: 22
+        width: 14
+        height: 8
       alignment: 0
       pivot: {x: 0, y: 0}
   spritePackingTag: 
