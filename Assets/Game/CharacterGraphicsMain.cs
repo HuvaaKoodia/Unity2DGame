@@ -3,41 +3,47 @@ using System.Collections;
 
 public class CharacterGraphicsMain : MonoBehaviour {
 	public Animator animator;
-	public GameObject flippable,hand,shoulder_pos;
-	public float HandReach=1,HandRadius=0.2f,HandMovementSpeed=10;
+	public GameObject flippable,hand,head,shoulder_pos,head_pos;
+	public float HandReach=1,HandRadius=0.2f,HandMovementSpeed=10,HeadMovementSpeed=10;
 	
 	public float HandVelocity{get;private set;}
 	public Vector3 HandVelocityDirection{get;private set;}
-	Vector3 old_hand_pos;
-	
+	Vector3 hand_target;
+
 	// Use this for initialization
 	void Start () {
+
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+		var t=hand_target-shoulder_pos.transform.position;
 
-		//hand pos calculations
-		Plane p=new Plane(Vector3.forward,Vector3.zero);
+		if (t.magnitude>HandReach)
+			t=t.normalized*HandReach;
 
-		float enter;
-		var ray=Camera.main.ScreenPointToRay(Input.mousePosition);
-		if (p.Raycast(ray,out enter)){
+		HandVelocity=Vector3.Distance(hand.transform.position,shoulder_pos.transform.position+t);
+		HandVelocityDirection=shoulder_pos.transform.position+t-hand.transform.position;
 
-			var t=ray.GetPoint(enter)-shoulder_pos.transform.position;
+		
+		hand.transform.position=Vector3.Lerp(hand.transform.position,shoulder_pos.transform.position+t,Time.deltaTime*HandMovementSpeed);
 
-			if (t.magnitude>HandReach)
-				t=t.normalized*HandReach;
+		head.transform.position=Vector3.Lerp(head.transform.position,head_pos.transform.position,Time.deltaTime*HeadMovementSpeed);
 
-			HandVelocity=Vector3.Distance(hand.transform.position,shoulder_pos.transform.position+t);
-			HandVelocityDirection=shoulder_pos.transform.position+t-hand.transform.position;
-
-			//hand.rigidbody2D.AddForce(HandVelocityDirection.normalized*Mathf.Min(HandMovementSpeed*Time.deltaTime,HandVelocity));
-			hand.transform.position=Vector3.Lerp(hand.transform.position,shoulder_pos.transform.position+t,Time.deltaTime*HandMovementSpeed);
+		//limit inside range
+		/*
+		if (Vector3.Distance(shoulder_pos.transform.position,hand.transform.position)>HandReach)
+		{
+			hand.transform.position=shoulder_pos.transform.position+(hand.transform.position-shoulder_pos.transform.position).normalized*HandReach;
+			hand.rigidbody2D.velocity=Vector3.zero;
 		}
+		 */
+	}
 
 
-		old_hand_pos=hand.transform.position;
+
+	public void SetHandTarget(Vector3 target){
+		hand_target=target;
 	}
 
 	public Vector2 GetHandPos ()
@@ -54,6 +60,7 @@ public class CharacterGraphicsMain : MonoBehaviour {
 		var scale=flippable.transform.localScale;
 		scale.x*=-1;
 		flippable.transform.localScale=scale;
+		head.transform.localScale=scale;
 	}
 
 	public void StartWalking(){

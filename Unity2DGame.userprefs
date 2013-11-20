@@ -1,13 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Game\WeaponShoot.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\HeadGraphics.cs">
     <Files>
+      <File FileName="Assets\Game\WeaponMain.cs" Line="32" Column="25" />
+      <File FileName="Assets\Game\WeaponShoot.cs" Line="1" Column="1" />
+      <File FileName="Assets\Game\CharacterPlayer.cs" Line="16" Column="25" />
+      <File FileName="Assets\Game\CharacterMain.cs" Line="46" Column="2" />
       <File FileName="Assets\BulletMain.cs" Line="1" Column="1" />
-      <File FileName="Assets\Game\CharacterMain.cs" Line="81" Column="42" />
-      <File FileName="Assets\Game\CharacterGraphicsMain.cs" Line="19" Column="3" />
-      <File FileName="Assets\Game\WeaponMain.cs" Line="10" Column="56" />
-      <File FileName="Assets\BulletMain.cs" Line="6" Column="2" />
-      <File FileName="Assets\Game\WeaponShoot.cs" Line="55" Column="3" />
+      <File FileName="Assets\Game\CharacterGraphicsMain.cs" Line="12" Column="1" />
+      <File FileName="Assets\HeadGraphics.cs" Line="23" Column="18" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

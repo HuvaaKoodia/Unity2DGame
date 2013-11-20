@@ -6,7 +6,7 @@ public class WeaponShoot : MonoBehaviour {
 	public delegate void WeaponRecoidEvent(Vector3 force);
 
 	public GameObject ShootPos,CasingPos;
-	public GameObject Projectile_prefab,Casing_prefab,Smoke_prefab;
+	public GameObject Projectile_prefab,Casing_prefab,Smoke_prefab,MuzzleFlash_prefab;
 
 	public float Projectile_velocity,Casing_velocity,Recoil_force;
 	
@@ -55,6 +55,10 @@ public class WeaponShoot : MonoBehaviour {
 
 		if (Smoke_prefab){
 			go=Instantiate(Smoke_prefab,ShootPos.transform.position,transform.rotation) as GameObject;
+		}
+
+		if (MuzzleFlash_prefab){
+			Instantiate(MuzzleFlash_prefab,ShootPos.transform.position,transform.rotation);
 		}
 
 		if (OnWeaponRecoilEvent!=null)

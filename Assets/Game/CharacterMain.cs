@@ -3,61 +3,48 @@ using System.Collections;
 
 public class CharacterMain : MonoBehaviour {
 
-
-
 	public CharacterGraphicsMain GraphicsMain;
-	public float move_acceleration=70,move_speed=1,jump_speed=60,throwing_force=100;
+	public float 
+		move_acceleration=70,
+		move_speed=1,
+		jump_speed=60,
+		throwing_force=100,
+		recoil_multiplier_add_per_shot=2;
 
-	public Transform groundPos;
+	public Transform groundPos,weapon_pos_back,weapon_pos_hip;
 	
 	bool OnGround,FacingRight;
-	WeaponMain CurrentWeapon=null;
+	public WeaponMain CurrentWeapon{get; private set;}
+	public WeaponMain OtherWeapon{get; private set;}
 
+	float recoil_strength=1;
+
+	public bool DEAD{get;private set;}
+	
+	int _hp;
+	
+	public int HP{
+		get {return _hp;}
+		set {
+			_hp=value;
+			if (_hp<0){
+				DEAD=true;
+				_hp=0;
+				rigidbody2D.fixedAngle=false;
+			}
+		}
+	}
 
 
 	// Use this for initialization
 	void Start () {
 		OnGround=false;
 		FacingRight=true;
+		DEAD=false;
+		_hp=100;
 	}
 
 	void Update(){
-		//OnGround=Physics2D.Linecast(transform.position, groundPos.position, 1 << LayerMask.NameToLayer("Ground"));
-		if (Input.GetMouseButton(0)){
-			if (CurrentWeapon==null){
-				//pick up weapon
-				var cols=Physics2D.OverlapCircleAll(GraphicsMain.GetHandPos(),GraphicsMain.HandRadius);
-
-				foreach (var c in cols){
-					if (c.gameObject.tag=="Weapon"){
-						//DEV.TODO check for weapon value
-						SetCurrentWeapon(c.gameObject.GetComponent<WeaponMain>());
-						break;
-					}
-				}
-			}
-		}
-		if (Input.GetMouseButton(0)){
-			if (CurrentWeapon!=null){
-				//attack
-				CurrentWeapon.AttackPressed();
-			}
-		}
-		if (Input.GetMouseButtonUp(0)){
-			if (CurrentWeapon!=null){
-				//attack
-				CurrentWeapon.AttackReleased();
-			}
-		}
-
-		if (Input.GetKeyDown(KeyCode.F)){
-			if (CurrentWeapon!=null){
-				//throw/drop weapon
-				Debug.Log(""+GraphicsMain.HandVelocity);
-				CurrentWeapon.Throw(GraphicsMain.HandVelocityDirection.normalized,throwing_force*GraphicsMain.HandVelocity);
-				ClearCurrentWeapon();
-			}
-		}
 
 		if (CurrentWeapon!=null)
 		{
@@ -69,63 +56,151 @@ public class CharacterMain : MonoBehaviour {
 			//Quaternion.LookRotation(GraphicsMain.GetHandDirection(),)
 			//CurrentWeapon.transform.rotation=Quaternion.AngleAxis(Time.time*20,Vector3.forward);
 		}
+
+		if (OtherWeapon!=null)
+		{
+			if (OtherWeapon.CarryOnHip)
+				OtherWeapon.SetPosition(weapon_pos_hip.position);
+			else
+				OtherWeapon.SetPosition(weapon_pos_back.position);
+			OtherWeapon.transform.rotation=Quaternion.AngleAxis(-90,Vector3.forward);
+		}
 	}
 
-	void SetCurrentWeapon(WeaponMain weapon){
+	public void SetCurrentWeapon(WeaponMain weapon){
 		CurrentWeapon=weapon;
 
 		CurrentWeapon.SetVertical(FacingRight);
-		CurrentWeapon.collider2D.isTrigger=true;
-		CurrentWeapon.rigidbody2D.isKinematic=true;
+
+		SetWeapon(CurrentWeapon);
 
 		if (CurrentWeapon.IsProjectileWeapon())
 			CurrentWeapon.ProjectileComp.OnWeaponRecoilEvent+=OnRecoil;
 	}
 	
-	void ClearCurrentWeapon(){
-		CurrentWeapon.collider2D.isTrigger=false;
-		CurrentWeapon.rigidbody2D.isKinematic=false;
+	public void ClearCurrentWeapon(){
+		ClearWeapon (CurrentWeapon);
 
 		if (CurrentWeapon.IsProjectileWeapon())
 			CurrentWeapon.ProjectileComp.OnWeaponRecoilEvent-=OnRecoil;
 
 		CurrentWeapon=null;
 	}
+
+	public void SetOtherWeapon(WeaponMain weapon){
+		OtherWeapon=weapon;
+
+		if (OtherWeapon.CarryOnHip)
+			OtherWeapon.SetDepth(5);
+
+		OtherWeapon.SetVertical(false);
+		SetWeapon(OtherWeapon);
+
+		OtherWeapon.SetVertical(FacingRight);
+	}
+
+	public void SwapWeapons(){
+		var other=OtherWeapon;
+		var current=CurrentWeapon;
+
+		if (CurrentWeapon==null){
+			if(OtherWeapon==null){
+				return;
+			}
+			else {
+
+				ClearOtherWeapon();
+				SetCurrentWeapon(other);
+				return;
+			}
+		}
+		else{
+			if(OtherWeapon==null){
+				ClearCurrentWeapon();
+				SetOtherWeapon(current);
+			}
+			else {
+				ClearCurrentWeapon();
+				ClearOtherWeapon();
+
+				SetOtherWeapon(current);
+				SetCurrentWeapon(other);
+			}
+		}
+	}
+
+	public void ClearOtherWeapon(){
+		ClearWeapon(OtherWeapon);
+
+		OtherWeapon.SetVertical(false);
+
+		OtherWeapon=null;
+	}
+
+	public void SetFacing(bool right){
+		if (FacingRight==right) return;
+
+		if (CurrentWeapon!=null)
+			CurrentWeapon.SetVertical(right);
+
+		if (OtherWeapon!=null)
+			OtherWeapon.SetVertical(right);
+
+		GraphicsMain.FlipHorizontal();
+
+		FacingRight=right;
+	}
+
+	public void ThrowWeapon ()
+	{
+		CurrentWeapon.Throw(GraphicsMain.HandVelocityDirection.normalized,throwing_force*GraphicsMain.HandVelocity);
+		ClearCurrentWeapon();
+	}
+
 	
-	void FixedUpdate () {
-		//movement
-		if (Input.GetAxis("Horizontal")!=0){
+	public void Jump ()
+	{
+		if (OnGround){
+			rigidbody2D.AddForce(
+				Vector2.up*jump_speed
+			);
+		}
+	}
+	
+	public void Move (float direction)
+	{
+		if (direction!=0){
 			if (rigidbody2D.velocity.magnitude<=move_speed){
 				rigidbody2D.AddForce(
-					Vector2.right*Input.GetAxis("Horizontal")*move_acceleration
-				);
-				
-				SetFacing(Input.GetAxis("Horizontal")>0);
+					Vector2.right*direction*move_acceleration
+					);
+				SetFacing(direction>0);
 			}
 			GraphicsMain.StartWalking();
 		}
 		else{
 			GraphicsMain.StopWalking();
 		}
-
-		if (Input.GetButtonDown("Jump")){
-			if (OnGround){
-				rigidbody2D.AddForce(
-					Vector2.up*jump_speed
-				);
-			}
-		}
 	}
 
-	void SetFacing(bool right){
-		if (FacingRight==right) return;
+	public void ClearRecoil ()
+	{
+		recoil_strength=1;
+	}
 
-		if (CurrentWeapon!=null)
-			CurrentWeapon.SetVertical(right);
 
-		GraphicsMain.FlipHorizontal();
+	//members
 
-		FacingRight=right;
+	void SetWeapon(WeaponMain w){
+		w.collider2D.isTrigger=true;
+		w.rigidbody2D.isKinematic=true;
+	}
+
+	void ClearWeapon(WeaponMain w){
+		w.collider2D.isTrigger=false;
+		w.rigidbody2D.isKinematic=false;
+		
+		w.SetDepth(-5);
 	}
 
 	void OnCollisionEnter2D(Collision2D c){
@@ -137,6 +212,7 @@ public class CharacterMain : MonoBehaviour {
 	}
 
 	void OnRecoil(Vector3 force){
-		GraphicsMain.hand.rigidbody2D.AddForce(force);
+		GraphicsMain.hand.rigidbody2D.AddForce(force*recoil_strength);
+		recoil_strength+=recoil_multiplier_add_per_shot;
 	}
 }

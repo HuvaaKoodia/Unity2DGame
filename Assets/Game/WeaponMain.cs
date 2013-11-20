@@ -10,6 +10,7 @@ public class WeaponMain : MonoBehaviour {
 	public bool IsProjectileWeapon(){return ProjectileComp!=null;}
 	public WeaponShoot ProjectileComp{get;private set;}
 
+	public bool CarryOnHip;
 
 	// Use this for initialization
 	void Start () {
@@ -48,5 +49,10 @@ public class WeaponMain : MonoBehaviour {
 	{
 		if (ProjectileComp!=null)
 			ProjectileComp.ReleaseTrigger();
+	}
+
+	public void SetDepth (int d)
+	{
+		GraphicsMain.GetComponent<SpriteRenderer>().sortingOrder=d;
 	}
 }
