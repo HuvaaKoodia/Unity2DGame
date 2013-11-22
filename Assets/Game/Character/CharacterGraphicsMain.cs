@@ -10,6 +10,13 @@ public class CharacterGraphicsMain : MonoBehaviour {
 	public Vector3 HandVelocityDirection{get;private set;}
 	Vector3 hand_target;
 
+	bool dead=false;
+
+	public void SetDead(){
+		dead=true;
+		//hand.rigidbody2D.gravityScale=1;
+	}
+
 	// Use this for initialization
 	void Start () {
 
@@ -17,6 +24,9 @@ public class CharacterGraphicsMain : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+
+		head.transform.position=Vector3.Lerp(head.transform.position,head_pos.transform.position,Time.deltaTime*HeadMovementSpeed);
+
 		var t=hand_target-shoulder_pos.transform.position;
 
 		if (t.magnitude>HandReach)
@@ -28,7 +38,6 @@ public class CharacterGraphicsMain : MonoBehaviour {
 		
 		hand.transform.position=Vector3.Lerp(hand.transform.position,shoulder_pos.transform.position+t,Time.deltaTime*HandMovementSpeed);
 
-		head.transform.position=Vector3.Lerp(head.transform.position,head_pos.transform.position,Time.deltaTime*HeadMovementSpeed);
 
 		//limit inside range
 		/*

@@ -19,6 +19,8 @@ public class WeaponShoot : MonoBehaviour {
 	
 	bool can_shoot,trigger_down;
 
+	public AudioPlayer shoot_sound;
+
 	// Use this for initialization
 	void Start () {
 		firerate_timer=new Timer(firerate);
@@ -63,6 +65,9 @@ public class WeaponShoot : MonoBehaviour {
 
 		if (OnWeaponRecoilEvent!=null)
 			OnWeaponRecoilEvent(transform.TransformDirection(transform.localScale.y>0?Vector3.up:Vector3.down)*Recoil_force);
+
+		if (shoot_sound!=null)
+			shoot_sound.PlayRandom();
 	}
 
 	public void ReleaseTrigger(){

@@ -19,13 +19,27 @@ public class CharacterMain : MonoBehaviour {
 
 	float recoil_strength=1;
 
-	public bool DEAD{get;private set;}
+	bool dead;
+
+	public bool DEAD
+	{
+		get {return dead;}
+		private set
+		{
+			dead=value;
+			if (dead){
+				GraphicsMain.SetDead();
+				GraphicsMain.StopWalking();
+			}
+		}
+	}
 	
-	int _hp;
+	float _hp;
 	
-	public int HP{
+	public float HP{
 		get {return _hp;}
 		set {
+			Debug.Log("DMG: "+(_hp-value));
 			_hp=value;
 			if (_hp<0){
 				DEAD=true;

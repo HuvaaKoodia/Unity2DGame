@@ -58,6 +58,8 @@ public class CharacterPlayer : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
+		if (Main.DEAD) return;
+
 		//hand movement
 
 		Plane p=new Plane(Vector3.forward,Vector3.zero);
@@ -69,13 +71,11 @@ public class CharacterPlayer : MonoBehaviour {
 			Main.GraphicsMain.SetHandTarget(ray.GetPoint(enter));
 		}
 
-
 		//movement
 		Main.Move(Input.GetAxis("Horizontal"));
 
 		if (Input.GetButtonDown("Jump")){
 			Main.Jump();
-
 		}
 	}
 }
