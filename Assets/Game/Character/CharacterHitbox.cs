@@ -21,7 +21,7 @@ public class CharacterHitbox : MonoBehaviour {
 			if (rigidbody2D!=null)
 				rigidbody2D.AddForce(-c.relativeVelocity);
 
-			//DEV.temp
+
 			main.HP-=(c.relativeVelocity.magnitude);
 		
 			Destroy(c.gameObject);

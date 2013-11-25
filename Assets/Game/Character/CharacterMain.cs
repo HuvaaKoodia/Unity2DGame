@@ -14,6 +14,7 @@ public class CharacterMain : MonoBehaviour {
 	public Transform groundPos,weapon_pos_back,weapon_pos_hip;
 	
 	bool OnGround,FacingRight;
+	WeaponMain weapon_to_pick_up;
 	public WeaponMain CurrentWeapon{get; private set;}
 	public WeaponMain OtherWeapon{get; private set;}
 
@@ -30,6 +31,8 @@ public class CharacterMain : MonoBehaviour {
 			if (dead){
 				GraphicsMain.SetDead();
 				GraphicsMain.StopWalking();
+				if (CurrentWeapon!=null)
+					ClearCurrentWeapon(true);
 			}
 		}
 	}
@@ -49,7 +52,6 @@ public class CharacterMain : MonoBehaviour {
 		}
 	}
 
-
 	// Use this for initialization
 	void Start () {
 		OnGround=false;
@@ -59,6 +61,23 @@ public class CharacterMain : MonoBehaviour {
 	}
 
 	void Update(){
+
+		if (weapon_to_pick_up!=null)
+		{
+			GraphicsMain.SetHandTarget(weapon_to_pick_up.GetComponent<WeaponMain>().HandPos1.transform.position);
+
+			var cols=Physics2D.OverlapCircleAll(GraphicsMain.GetHandPos(),GraphicsMain.HandRadius);
+			
+			foreach (var c in cols){
+				if (c.isTrigger) continue;
+				if (c.gameObject.tag=="Weapon"){
+					//DEV.TODO check for weapon value
+					SetCurrentWeapon(c.gameObject.GetComponent<WeaponMain>());
+					weapon_to_pick_up=null;
+					break;
+				}
+			}
+		}
 
 		if (CurrentWeapon!=null)
 		{
@@ -92,8 +111,8 @@ public class CharacterMain : MonoBehaviour {
 			CurrentWeapon.ProjectileComp.OnWeaponRecoilEvent+=OnRecoil;
 	}
 	
-	public void ClearCurrentWeapon(){
-		ClearWeapon (CurrentWeapon);
+	public void ClearCurrentWeapon(bool changeToWeapon){
+		ClearWeapon (CurrentWeapon,changeToWeapon);
 
 		if (CurrentWeapon.IsProjectileWeapon())
 			CurrentWeapon.ProjectileComp.OnWeaponRecoilEvent-=OnRecoil;
@@ -130,11 +149,11 @@ public class CharacterMain : MonoBehaviour {
 		}
 		else{
 			if(OtherWeapon==null){
-				ClearCurrentWeapon();
+				ClearCurrentWeapon(false);
 				SetOtherWeapon(current);
 			}
 			else {
-				ClearCurrentWeapon();
+				ClearCurrentWeapon(false);
 				ClearOtherWeapon();
 
 				SetOtherWeapon(current);
@@ -144,7 +163,7 @@ public class CharacterMain : MonoBehaviour {
 	}
 
 	public void ClearOtherWeapon(){
-		ClearWeapon(OtherWeapon);
+		ClearWeapon(OtherWeapon,false);
 
 		OtherWeapon.SetVertical(false);
 
@@ -168,7 +187,7 @@ public class CharacterMain : MonoBehaviour {
 	public void ThrowWeapon ()
 	{
 		CurrentWeapon.Throw(GraphicsMain.HandVelocityDirection.normalized,throwing_force*GraphicsMain.HandVelocity);
-		ClearCurrentWeapon();
+		ClearCurrentWeapon(false);
 	}
 
 	
@@ -202,18 +221,21 @@ public class CharacterMain : MonoBehaviour {
 		recoil_strength=1;
 	}
 
-
 	//members
 
 	void SetWeapon(WeaponMain w){
 		w.collider2D.isTrigger=true;
 		w.rigidbody2D.isKinematic=true;
+		w.gameObject.layer=gameObject.layer;
 	}
 
-	void ClearWeapon(WeaponMain w){
+	void ClearWeapon(WeaponMain w,bool changeToWeapon){
 		w.collider2D.isTrigger=false;
 		w.rigidbody2D.isKinematic=false;
-		
+
+		if (changeToWeapon)
+			w.gameObject.layer=LayerMask.NameToLayer("Weapon");
+
 		w.SetDepth(-5);
 	}
 
@@ -228,5 +250,10 @@ public class CharacterMain : MonoBehaviour {
 	void OnRecoil(Vector3 force){
 		GraphicsMain.hand.rigidbody2D.AddForce(force*recoil_strength);
 		recoil_strength+=recoil_multiplier_add_per_shot;
+	}
+
+	public void PickUpWeapon (WeaponMain weapon)
+	{
+		weapon_to_pick_up=weapon;
 	}
 }

@@ -55,4 +55,11 @@ public class WeaponMain : MonoBehaviour {
 	{
 		GraphicsMain.GetComponent<SpriteRenderer>().sortingOrder=d;
 	}
+
+	public void OnCollisionStay2D(Collision2D c){
+		if (gameObject.layer!=LayerMask.NameToLayer("Weapon")&&
+		    rigidbody2D.velocity.magnitude<0.1f&&c.gameObject.tag=="Ground"){
+			gameObject.layer=LayerMask.NameToLayer("Weapon");
+		}
+	}
 }

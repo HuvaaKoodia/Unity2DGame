@@ -15,7 +15,7 @@ public class BulletMain : MonoBehaviour {
 	}
 
 	public void Launch(Vector3 direction,float speed){
-		rigidbody2D.AddForce(direction*speed);
+		rigidbody2D.velocity=direction*speed;
 	}
 
 	public void OnCollisionEnter2D(Collision2D c){

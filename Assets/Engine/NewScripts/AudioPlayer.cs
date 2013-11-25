@@ -10,7 +10,6 @@ public class AudioPlayer : MonoBehaviour {
 
 	public void Start(){
 		if (source==null){
-
 			source =gameObject.AddComponent<AudioSource>();
 		}
 	}

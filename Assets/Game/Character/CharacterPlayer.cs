@@ -12,8 +12,17 @@ public class CharacterPlayer : MonoBehaviour {
 		Main=GetComponent<CharacterMain>();
 	}
 
+	bool picked_up_weapon=false;
+
 	void Update(){
 		if (Main.DEAD) return;
+
+		if (Input.GetMouseButton(0)){
+			if (!picked_up_weapon&&Main.CurrentWeapon!=null){
+				//attack
+				Main.CurrentWeapon.AttackPressed();
+			}
+		}
 
 		if (Input.GetMouseButton(0)){
 			if (Main.CurrentWeapon==null){
@@ -25,30 +34,27 @@ public class CharacterPlayer : MonoBehaviour {
 					if (c.gameObject.tag=="Weapon"){
 						//DEV.TODO check for weapon value
 						Main.SetCurrentWeapon(c.gameObject.GetComponent<WeaponMain>());
+						picked_up_weapon=true;
 						break;
 					}
 				}
+
 			}
 		}
-		if (Input.GetMouseButton(0)){
-			if (Main.CurrentWeapon!=null){
-				//attack
-				Main.CurrentWeapon.AttackPressed();
-			}
-		}
+
 		if (Input.GetMouseButtonUp(0)){
 			if (Main.CurrentWeapon!=null){
 				//attack
 				Main.CurrentWeapon.AttackReleased();
 			}
 			Main.ClearRecoil();
+			picked_up_weapon=false;
 		}
 
 		if (Input.GetKeyDown(KeyCode.F)){
 			if (Main.CurrentWeapon!=null){
 				//throw/drop weapon
 				Main.ThrowWeapon();
-
 			}
 		}
 

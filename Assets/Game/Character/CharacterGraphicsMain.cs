@@ -23,9 +23,11 @@ public class CharacterGraphicsMain : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void FixedUpdate (){
 
 		head.transform.position=Vector3.Lerp(head.transform.position,head_pos.transform.position,Time.deltaTime*HeadMovementSpeed);
+
+		//if (dead) return;
 
 		var t=hand_target-shoulder_pos.transform.position;
 

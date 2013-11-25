@@ -1,14 +1,13 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Engine\NewScripts\AudioPlayer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CharacterEnemy.cs">
     <Files>
-      <File FileName="Assets\Game\Character\CharacterMain.cs" Line="31" Column="28" />
-      <File FileName="Assets\Game\Character\CharacterHitbox.cs" Line="1" Column="1" />
-      <File FileName="Assets\Game\WeaponMain.cs" Line="1" Column="1" />
-      <File FileName="Assets\Game\WeaponShoot.cs" Line="22" Column="20" />
-      <File FileName="c:\Users\kat12silkkah\Documents\GitHub\Unity2DGame\Assets\Game\Character\CharacterGraphicsMain.cs" Line="1" Column="1" />
-      <File FileName="Assets\DemoScripts\CameraFollow.cs" Line="33" Column="3" />
-      <File FileName="Assets\Engine\NewScripts\AudioPlayer.cs" Line="12" Column="21" />
+      <File FileName="Assets\Animation_DestroyInState.cs" Line="18" Column="50" />
+      <File FileName="Assets\Animation_DestroyInState.cs" Line="1" Column="1" />
+      <File FileName="Assets\Game\Character\CharacterMain.cs" Line="1" Column="1" />
+      <File FileName="Assets\CharacterEnemy.cs" Line="31" Column="11" />
+      <File FileName="c:\Users\kat12silkkah\Documents\GitHub\Unity2DGame\Assets\Game\Character\CharacterMain.cs" Line="1" Column="1" />
+      <File FileName="Assets\Game\Character\CharacterPlayer.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
