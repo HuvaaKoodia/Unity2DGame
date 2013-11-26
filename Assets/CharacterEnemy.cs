@@ -28,10 +28,25 @@ public class CharacterEnemy : MonoBehaviour {
 	void Update () {
 
 		if(player.DEAD){
+			main.Move(0);
 			return;
 		}
 
 		if (main.DEAD) return;
+
+		bool clear_sight_to_player=false;
+		//raycast to player
+		{
+			int mask=1<<LayerMask.NameToLayer("Ground")|1<<LayerMask.NameToLayer("Player")|1<<LayerMask.NameToLayer("Enemy");
+			var hits=Physics2D.RaycastAll(transform.position,player.transform.position-transform.position,100,mask);
+
+			if (hits.Length>0){
+				clear_sight_to_player=true;
+			}
+			//if (hits.collider!=null&&hit.collider.gameObject.tag=="Player"){
+			//	clear_sight_to_player=true;
+			//}
+		}
 
 		if (pick_up_weapon){
 			stop=true;
@@ -43,18 +58,17 @@ public class CharacterEnemy : MonoBehaviour {
 
 		if (main.CurrentWeapon==null){
 			if (!pick_up_weapon){
-				//DEV. mask doesn't work for unknown reasons
-				int mask=LayerMask.NameToLayer("Weapon");
-				var weapons=Physics2D.OverlapCircleAll(main.GraphicsMain.shoulder_pos.transform.position,main.GraphicsMain.HandReach);
+				int mask=1<<LayerMask.NameToLayer("Weapon");
+				var weapons=Physics2D.OverlapCircleAll(main.GraphicsMain.shoulder_pos.transform.position,main.GraphicsMain.HandReach,mask);
 
 				foreach (var w in weapons){
 					if (w.isTrigger) continue;
 					//DEV.TODO find best weapon
 					var comp=w.GetComponent<WeaponMain>();
-					if (comp!=null){
-						pick_up_weapon=true;
-						main.PickUpWeapon(comp);
-					}
+
+					pick_up_weapon=true;
+					main.PickUpWeapon(comp);
+					break;
 				}
 			}
 		}
@@ -66,22 +80,27 @@ public class CharacterEnemy : MonoBehaviour {
 
 				main.GraphicsMain.SetHandTarget(player.transform.position);
 
-				if (attackTimer.Update())
-				{
-					attack=!attack;
-					if (attack){
-						attackTimer.Delay=Random.Range(100,200);
-						attackTimer.Reset();
+				if (clear_sight_to_player){
+					if (attackTimer.Update())
+					{
+						attack=!attack;
+						if (attack){
+							attackTimer.Delay=Random.Range(100,200);
+							attackTimer.Reset();
+						}
+						else{
+							attackTimer.Delay=Random.Range(1000,2000);
+							attackTimer.Reset();
+							main.CurrentWeapon.AttackReleased();
+						}
 					}
-					else{
-						attackTimer.Delay=Random.Range(1000,2000);
-						attackTimer.Reset();
-						main.CurrentWeapon.AttackReleased();
+
+					if (attack){
+						main.CurrentWeapon.AttackPressed();
 					}
 				}
+				else{
 
-				if (attack){
-					main.CurrentWeapon.AttackPressed();
 				}
 
 			}

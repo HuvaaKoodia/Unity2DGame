@@ -3,6 +3,8 @@ using System.Collections;
 
 public class CharacterMain : MonoBehaviour {
 
+	public System.Action OnDeath;
+
 	public CharacterGraphicsMain GraphicsMain;
 	public float 
 		move_acceleration=70,
@@ -27,12 +29,19 @@ public class CharacterMain : MonoBehaviour {
 		get {return dead;}
 		private set
 		{
+			var old_dead=dead;
 			dead=value;
-			if (dead){
+			if (!old_dead&&dead){
 				GraphicsMain.SetDead();
 				GraphicsMain.StopWalking();
+				GraphicsMain.SetHandTarget(transform.position+Vector3.down*5);
+
+				gameObject.layer=LayerMask.NameToLayer("Corpse");
+
 				if (CurrentWeapon!=null)
 					ClearCurrentWeapon(true);
+				if (OnDeath!=null)
+					OnDeath();
 			}
 		}
 	}
@@ -61,24 +70,27 @@ public class CharacterMain : MonoBehaviour {
 	}
 
 	void Update(){
-
 		if (weapon_to_pick_up!=null)
 		{
 			GraphicsMain.SetHandTarget(weapon_to_pick_up.GetComponent<WeaponMain>().HandPos1.transform.position);
 
-			var cols=Physics2D.OverlapCircleAll(GraphicsMain.GetHandPos(),GraphicsMain.HandRadius);
+			int mask=1<<LayerMask.NameToLayer("Weapon");
+			var cols=Physics2D.OverlapCircleAll(GraphicsMain.GetHandPos(),GraphicsMain.HandRadius,mask);
 			
 			foreach (var c in cols){
 				if (c.isTrigger) continue;
-				if (c.gameObject.tag=="Weapon"){
-					//DEV.TODO check for weapon value
-					SetCurrentWeapon(c.gameObject.GetComponent<WeaponMain>());
-					weapon_to_pick_up=null;
-					break;
-				}
+				//DEV.TODO check for weapon value
+				SetCurrentWeapon(c.gameObject.GetComponent<WeaponMain>());
+				weapon_to_pick_up=null;
+				break;
 			}
 		}
 
+		UpdateCurrentWeaponPos();
+		UpdateOtherWeaponPos();
+	}
+
+	void UpdateCurrentWeaponPos(){
 		if (CurrentWeapon!=null)
 		{
 			CurrentWeapon.SetPosition(GraphicsMain.hand.transform.position);
@@ -89,7 +101,9 @@ public class CharacterMain : MonoBehaviour {
 			//Quaternion.LookRotation(GraphicsMain.GetHandDirection(),)
 			//CurrentWeapon.transform.rotation=Quaternion.AngleAxis(Time.time*20,Vector3.forward);
 		}
+	}
 
+	void UpdateOtherWeaponPos(){
 		if (OtherWeapon!=null)
 		{
 			if (OtherWeapon.CarryOnHip)
@@ -109,6 +123,10 @@ public class CharacterMain : MonoBehaviour {
 
 		if (CurrentWeapon.IsProjectileWeapon())
 			CurrentWeapon.ProjectileComp.OnWeaponRecoilEvent+=OnRecoil;
+
+		UpdateCurrentWeaponPos();
+
+		CurrentWeapon.GetComponent<WeaponHitboxStats>().ClearVelocity();
 	}
 	
 	public void ClearCurrentWeapon(bool changeToWeapon){
@@ -130,6 +148,10 @@ public class CharacterMain : MonoBehaviour {
 		SetWeapon(OtherWeapon);
 
 		OtherWeapon.SetVertical(FacingRight);
+
+		OtherWeapon.GetComponent<WeaponHitboxStats>().in_inventory=true;
+
+		UpdateOtherWeaponPos();
 	}
 
 	public void SwapWeapons(){
@@ -186,7 +208,7 @@ public class CharacterMain : MonoBehaviour {
 
 	public void ThrowWeapon ()
 	{
-		CurrentWeapon.Throw(GraphicsMain.HandVelocityDirection.normalized,throwing_force*GraphicsMain.HandVelocity);
+		CurrentWeapon.Throw(GraphicsMain.HandVelocityDirection.normalized,throwing_force*GraphicsMain.HandThrowVelocity);
 		ClearCurrentWeapon(false);
 	}
 
@@ -237,6 +259,7 @@ public class CharacterMain : MonoBehaviour {
 			w.gameObject.layer=LayerMask.NameToLayer("Weapon");
 
 		w.SetDepth(-5);
+		w.GetComponent<WeaponHitboxStats>().in_inventory=false;
 	}
 
 	void OnCollisionEnter2D(Collision2D c){
@@ -255,5 +278,28 @@ public class CharacterMain : MonoBehaviour {
 	public void PickUpWeapon (WeaponMain weapon)
 	{
 		weapon_to_pick_up=weapon;
+	}
+
+	public Collider2D[] FindWeapons(){
+		int mask=1<<LayerMask.NameToLayer("Weapon");
+		return Physics2D.OverlapCircleAll(GraphicsMain.GetHandPos(),GraphicsMain.HandRadius,mask);
+	}
+
+	bool can_take_meelee_dmg=true;
+
+	public bool TakeMeeleeDMG (float f)
+	{
+		if (can_take_meelee_dmg){
+			HP-=f;
+			StartCoroutine(MeeleeDMGTimer());
+			return true;
+		}
+		return false;
+	}
+
+	IEnumerator MeeleeDMGTimer(){
+		can_take_meelee_dmg=false;
+		yield return new WaitForSeconds(1f);
+		can_take_meelee_dmg=true;
 	}
 }

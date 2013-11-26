@@ -5,10 +5,11 @@ public class CharacterGraphicsMain : MonoBehaviour {
 	public Animator animator;
 	public GameObject flippable,hand,head,shoulder_pos,head_pos;
 	public float HandReach=1,HandRadius=0.2f,HandMovementSpeed=10,HeadMovementSpeed=10;
-	
+
 	public float HandVelocity{get;private set;}
+	public float HandThrowVelocity{get;private set;}
 	public Vector3 HandVelocityDirection{get;private set;}
-	Vector3 hand_target;
+	Vector3 hand_target,hand_pos_old;
 
 	bool dead=false;
 
@@ -34,12 +35,15 @@ public class CharacterGraphicsMain : MonoBehaviour {
 		if (t.magnitude>HandReach)
 			t=t.normalized*HandReach;
 
-		HandVelocity=Vector3.Distance(hand.transform.position,shoulder_pos.transform.position+t);
+		HandThrowVelocity=Vector3.Distance(hand.transform.position,shoulder_pos.transform.position+t);
 		HandVelocityDirection=shoulder_pos.transform.position+t-hand.transform.position;
 
 		
 		hand.transform.position=Vector3.Lerp(hand.transform.position,shoulder_pos.transform.position+t,Time.deltaTime*HandMovementSpeed);
 
+		HandVelocity=Vector3.Distance(hand.transform.localPosition,hand_pos_old);
+
+		hand_pos_old=hand.transform.localPosition;
 
 		//limit inside range
 		/*

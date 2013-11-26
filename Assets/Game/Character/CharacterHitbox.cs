@@ -37,6 +37,28 @@ public class CharacterHitbox : MonoBehaviour {
 
 			main.HP-=(c.relativeVelocity.magnitude);
 		}
+	}
 
+	void OnTriggerStay2D(Collider2D c){
+		if (c.gameObject.tag=="Weapon"){
+			var weapon=c.GetComponent<WeaponHitboxStats>();
+			if (weapon.in_inventory) return;
+
+			float vel=weapon.Velocity*100;
+
+			if (vel<weapon.hit_speed_threshold) return;
+
+			//Debug.Log("mag: "+vel);
+
+				main.rigidbody2D.AddForce(weapon.Direction*vel*10);
+			
+			
+			if (main.TakeMeeleeDMG(vel)){
+
+				if (weapon.is_blade&&Blood_prefab){
+					Instantiate(Blood_prefab,c.transform.position,Quaternion.identity);
+				}
+			}
+		}
 	}
 }

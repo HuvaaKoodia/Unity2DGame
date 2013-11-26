@@ -11,16 +11,11 @@ public class WeaponMain : MonoBehaviour {
 	public WeaponShoot ProjectileComp{get;private set;}
 
 	public bool CarryOnHip;
-
+	
 	// Use this for initialization
 	void Start () {
 		start_scale=transform.localScale;
 		ProjectileComp=GetComponent<WeaponShoot>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 
 	public void SetPosition(Vector3 position){
@@ -31,7 +26,7 @@ public class WeaponMain : MonoBehaviour {
 		int i=right?1:-1;
 		var scale=start_scale;
 		scale.y*=i;
-		transform.localScale=scale;		
+		transform.localScale=scale;	
 	}
 
 	public void Throw (Vector3 direction,float speed)

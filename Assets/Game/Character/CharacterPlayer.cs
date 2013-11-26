@@ -27,18 +27,16 @@ public class CharacterPlayer : MonoBehaviour {
 		if (Input.GetMouseButton(0)){
 			if (Main.CurrentWeapon==null){
 				//pick up weapon
-				var cols=Physics2D.OverlapCircleAll(Main.GraphicsMain.GetHandPos(),Main.GraphicsMain.HandRadius);
+				var weapons=Main.FindWeapons();
 
-				foreach (var c in cols){
-					if (c.isTrigger) continue;
-					if (c.gameObject.tag=="Weapon"){
-						//DEV.TODO check for weapon value
-						Main.SetCurrentWeapon(c.gameObject.GetComponent<WeaponMain>());
-						picked_up_weapon=true;
-						break;
-					}
+				foreach (var w in weapons){
+					if (w.isTrigger) continue;
+
+					//DEV.TODO check for weapon value
+					Main.SetCurrentWeapon(w.gameObject.GetComponent<WeaponMain>());
+					picked_up_weapon=true;
+					break;
 				}
-
 			}
 		}
 
