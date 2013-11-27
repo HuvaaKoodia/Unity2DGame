@@ -7,6 +7,7 @@ public class GameController : MonoBehaviour {
 
 	public CharacterMain Player;
 
+	public HudMain HudController;
 	public GameObject Enemy_prefab;
 
 	public GameObject[] Weapon_prefabs;
@@ -22,13 +23,16 @@ public class GameController : MonoBehaviour {
 	bool round_over;
 
 	// Use this for initialization
-	void Start () {
+	void Start (){
 		enemy_spawn_timer=new Timer(enemy_spawn_rate);
 		enemy_amount_to_create=enemy_start_create_amount;
 
 		round_timer=new Timer(round_over_time);
-		round_over=true;
-		round_number=0;
+
+		round_number=1;
+		StartRoundTimer();
+
+		Player.OnDeath+=OnPlayerDeath;
 	}
 	
 	// Update is called once per frame
@@ -39,11 +43,14 @@ public class GameController : MonoBehaviour {
 		if(round_over){
 			if(round_timer.Update()){
 				//next round
-				round_number++;
+
 				if (round_number>1)
 					enemy_amount_to_create=enemy_start_create_amount*2;
+
+				round_number++;
 				round_over=false;
 				round_timer.Active=false;
+				HudController.SetTurnLabel(false,0);
 			}
 		}
 		else{
@@ -90,8 +97,20 @@ public class GameController : MonoBehaviour {
 		enemy_amount--;
 		if (enemy_amount==0){
 			if (round_over){
-				round_timer.Reset(true);
+
+				StartRoundTimer();
 			}
 		}
+	}
+
+	void OnPlayerDeath(){
+		HudController.SetTextLabel(true);
+		HudController.SetTextLose();
+	}
+
+	void StartRoundTimer(){
+		round_over=true;
+		HudController.SetTurnLabel(true,round_number);
+		round_timer.Reset(true);
 	}
 }

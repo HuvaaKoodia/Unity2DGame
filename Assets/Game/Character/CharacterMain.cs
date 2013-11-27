@@ -24,6 +24,13 @@ public class CharacterMain : MonoBehaviour {
 
 	bool dead;
 
+	void SetToLayer(Transform t,int layer){
+		t.gameObject.layer=layer;
+		foreach(Transform c in t){
+			SetToLayer(c,layer);
+		}
+	}
+
 	public bool DEAD
 	{
 		get {return dead;}
@@ -36,7 +43,7 @@ public class CharacterMain : MonoBehaviour {
 				GraphicsMain.StopWalking();
 				GraphicsMain.SetHandTarget(transform.position+Vector3.down*5);
 
-				gameObject.layer=LayerMask.NameToLayer("Corpse");
+				SetToLayer(transform,LayerMask.NameToLayer("Corpse"));
 
 				if (CurrentWeapon!=null)
 					ClearCurrentWeapon(true);

@@ -4,7 +4,7 @@ using System.Collections;
 public class WeaponHitboxStats : MonoBehaviour {
 
 	public bool is_blade=false;
-	public float hit_speed_threshold=1f,damage=1;
+	public float hit_speed_threshold=1f,meelee_damage=1;
 	
 	public float Velocity{get;private set;}
 	public Vector3 Direction{get;private set;}

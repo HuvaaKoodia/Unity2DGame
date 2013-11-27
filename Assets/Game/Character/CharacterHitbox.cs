@@ -20,10 +20,9 @@ public class CharacterHitbox : MonoBehaviour {
 		if (c.gameObject.tag=="Projectile"){
 			if (rigidbody2D!=null)
 				rigidbody2D.AddForce(-c.relativeVelocity);
-
-
-			main.HP-=(c.relativeVelocity.magnitude);
-		
+			
+			main.HP-=Mathf.Min(c.gameObject.GetComponent<BulletMain>().MAXDMG,(c.relativeVelocity.magnitude));
+			
 			Destroy(c.gameObject);
 
 			if (Blood_prefab)
@@ -33,9 +32,8 @@ public class CharacterHitbox : MonoBehaviour {
 		if (c.gameObject.tag=="Weapon"){
 			if (rigidbody2D!=null)
 				rigidbody2D.AddForce(-c.relativeVelocity);
-			
 
-			main.HP-=(c.relativeVelocity.magnitude);
+			main.HP-=(Mathf.Min(c.gameObject.GetComponent<WeaponHitboxStats>().meelee_damage,c.relativeVelocity.magnitude));
 		}
 	}
 
@@ -53,7 +51,7 @@ public class CharacterHitbox : MonoBehaviour {
 				main.rigidbody2D.AddForce(weapon.Direction*vel*10);
 			
 			
-			if (main.TakeMeeleeDMG(vel)){
+			if (main.TakeMeeleeDMG(weapon.meelee_damage)){
 
 				if (weapon.is_blade&&Blood_prefab){
 					Instantiate(Blood_prefab,c.transform.position,Quaternion.identity);

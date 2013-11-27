@@ -3,6 +3,7 @@ using System.Collections;
 
 public class BulletMain : MonoBehaviour {
 
+	public float MAXDMG{get;private set;}
 
 	// Use this for initialization
 	void Start () {
@@ -14,8 +15,9 @@ public class BulletMain : MonoBehaviour {
 	
 	}
 
-	public void Launch(Vector3 direction,float speed){
+	public void Launch(Vector3 direction,float speed,float maxdmg){
 		rigidbody2D.velocity=direction*speed;
+		MAXDMG=maxdmg;
 	}
 
 	public void OnCollisionEnter2D(Collision2D c){

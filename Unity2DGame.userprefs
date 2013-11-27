@@ -1,12 +1,18 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CharacterEnemy.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\DemoScripts\CameraFollow.cs">
     <Files>
-      <File FileName="Assets\GameController.cs" Line="36" Column="3" />
-      <File FileName="c:\Users\kat12silkkah\Documents\GitHub\Unity2DGame\Assets\Game\Character\CharacterGraphicsMain.cs" Line="15" Column="2" />
-      <File FileName="Assets\Game\Character\CharacterMain.cs" Line="55" Column="14" />
-      <File FileName="Assets\Engine\Sys\Timer.cs" Line="100" Column="2" />
-      <File FileName="Assets\CharacterEnemy.cs" Line="42" Column="4" />
+      <File FileName="Assets\HudMain.cs" Line="30" Column="3" />
+      <File FileName="Assets\GameController.cs" Line="35" Column="33" />
+      <File FileName="c:\Users\kat12silkkah\Documents\GitHub\Unity2DGame\Assets\Game\Character\CharacterGraphicsMain.cs" Line="1" Column="1" />
+      <File FileName="Assets\Game\Character\CharacterMain.cs" Line="45" Column="5" />
+      <File FileName="Assets\CharacterEnemy.cs" Line="1" Column="1" />
+      <File FileName="Assets\Game\Character\CharacterHitbox.cs" Line="39" Column="2" />
+      <File FileName="Assets\Game\WeaponMain.cs" Line="8" Column="24" />
+      <File FileName="Assets\Game\BulletMain.cs" Line="20" Column="17" />
+      <File FileName="c:\Users\kat12silkkah\Documents\GitHub\Unity2DGame\Assets\Game\WeaponShoot.cs" Line="44" Column="60" />
+      <File FileName="Assets\DemoScripts\CameraFollow.cs" Line="25" Column="28" />
+      <File FileName="Assets\Game\Character\CharacterPlayer.cs" Line="76" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

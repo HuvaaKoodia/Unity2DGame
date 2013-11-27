@@ -42,7 +42,7 @@ public class WeaponShoot : MonoBehaviour {
 		var go=Instantiate(Projectile_prefab,ShootPos.transform.position,transform.rotation) as GameObject;
 		var bullet=go.GetComponent<BulletMain>();
 		var angle=transform.rotation.eulerAngles.z*Mathf.Deg2Rad;
-		bullet.Launch(new Vector3(Mathf.Cos(angle),Mathf.Sin(angle)),Projectile_velocity);//DEV.OPTMZ get rid of trig.
+		bullet.Launch(new Vector3(Mathf.Cos(angle),Mathf.Sin(angle)),Projectile_velocity,GetComponent<WeaponMain>().Damage);//DEV.OPTMZ get rid of trig.
 
 		if (Casing_prefab){
 			go=Instantiate(Casing_prefab,CasingPos.transform.position,transform.rotation) as GameObject;

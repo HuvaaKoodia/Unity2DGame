@@ -5,6 +5,8 @@ public class WeaponMain : MonoBehaviour {
 
 	public GameObject HandPos1,GraphicsMain;
 
+	public float Damage=10;
+
 	Vector3 start_scale;
 
 	public bool IsProjectileWeapon(){return ProjectileComp!=null;}

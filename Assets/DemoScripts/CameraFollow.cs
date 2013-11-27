@@ -13,17 +13,19 @@ public class CameraFollow : MonoBehaviour
 	public bool ClampPosition=true;
 	public Vector2 maxXAndY;		// The maximum x and y coordinates the camera can have.
 	public Vector2 minXAndY;		// The minimum x and y coordinates the camera can have.
-	
-	bool CheckXMargin()
+
+	public float max_view_distance_x=1f,max_view_distance_y=0.5f;
+
+	bool CheckXMargin(float x)
 	{
 		// Returns true if the distance between the camera and the player in the x axis is greater than the x margin.
-		return Mathf.Abs(transform.position.x - Target.position.x) > xMargin;
+		return Mathf.Abs(transform.position.x - x) > xMargin;
 	}
 
-	bool CheckYMargin()
+	bool CheckYMargin(float y)
 	{
 		// Returns true if the distance between the camera and the player in the y axis is greater than the y margin.
-		return Mathf.Abs(transform.position.y - Target.position.y) > yMargin;
+		return Mathf.Abs(transform.position.y - y) > yMargin;
 	}
 
 
@@ -39,20 +41,46 @@ public class CameraFollow : MonoBehaviour
 		float targetX = transform.position.x;
 		float targetY = transform.position.y;
 
-		// If the player has moved beyond the x margin...
-		if(CheckXMargin()){
-			// ... the target dwx coordinate should be a Lerp between the camera's current x position and the player's current x position.
-			targetX = Mathf.Lerp(targetX, Target.position.x, xSmooth * Time.deltaTime);
+		Plane p=new Plane(Vector3.forward,Vector3.zero);
+
+		bool x_mouse_off=false,y_mouse_off=false;
+		float enter;
+		var ray=Camera.main.ScreenPointToRay(Input.mousePosition);
+		if (p.Raycast(ray,out enter))
+		{	
+			var mouse_pos=ray.GetPoint(enter);
+			var dir=mouse_pos-Target.position;
+			if(CheckXMargin(mouse_pos.x)){
+
+				if (Mathf.Abs(dir.x)>xMargin+max_view_distance_x) {
+
+					mouse_pos.x=xMargin+max_view_distance_x;
+				}
+
+				targetX = Mathf.Lerp(targetX, mouse_pos.x, xSmooth * Time.deltaTime);
+				x_mouse_off=true;
+			}
+			if(CheckYMargin(mouse_pos.y)){
+
+				if (Mathf.Abs(dir.y)>yMargin+max_view_distance_y) {
+					mouse_pos.y=yMargin+max_view_distance_y;
+				}
+
+				targetY = Mathf.Lerp(targetY, mouse_pos.y, ySmooth * Time.deltaTime);
+				y_mouse_off=true;
+			}
 		}
 
-		// If the player has moved beyond the y margin...
-		if(CheckYMargin()){
-			// ... the target y coordinate should be a Lerp between the camera's current y position and the player's current y position.
+		bool ok=!x_mouse_off&&!y_mouse_off;
+
+		if(ok&&CheckXMargin(Target.position.x)){
+			targetX = Mathf.Lerp(targetX, Target.position.x, xSmooth * Time.deltaTime);
+		}
+		if(ok&&CheckYMargin(Target.position.y)){
 			targetY = Mathf.Lerp(targetY, Target.position.y, ySmooth * Time.deltaTime);
 		}
 
 		if (ClampPosition){
-			// The target x and y coordinates should not be larger than the maximum or smaller than the minimum.
 			targetX = Mathf.Clamp(targetX, minXAndY.x, maxXAndY.x);
 			targetY = Mathf.Clamp(targetY, minXAndY.y, maxXAndY.y);
 		}
